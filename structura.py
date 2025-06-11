@@ -1,4 +1,19 @@
 import os
+import argparse
+import sys
+import logging
+
+logger = logging.getLogger("build_logger")
+file_handler = logging.FileHandler("app.log")
+file_handler.setLevel(logging.DEBUG)
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+formatter = logging.Formatter("[%(asctime)s - %(name)s - %(levelname)s] %(message)s")
+console.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+logger.addHandler(console)
+logger.addHandler(file_handler)
+
 import updater
 if not(os.path.exists("lookups")):
     print("downloading lookup files")
@@ -15,6 +30,18 @@ from tkinter import StringVar, Button, Label, Entry, Tk, Checkbutton, END, ACTIV
 from tkinter import filedialog, Scale,DoubleVar,HORIZONTAL,IntVar,Listbox, ANCHOR
 debug = False
 
+parser = argparse.ArgumentParser(description="Structura app that generates Resource packs from .mcstructure files.")
+
+# CLI Args
+parser.add_argument("--structure", type=str, help=".mcstructure file")
+parser.add_argument("--pack_name", type=str, help="Name of pack")
+parser.add_argument("--opacity", type=int, help="Opacity of blocks")
+parser.add_argument("--icon", type=str, help="Icon for pack")
+parser.add_argument("--offset", type=str, help="X, Y, X")
+parser.add_argument("--overwrite", type=bool, help="Overwrite the output file.")
+
+args = parser.parse_args()
+
 
 def browseStruct():
     #browse for a structure file.
@@ -25,12 +52,12 @@ def browseIcon():
     icon_var.set(filedialog.askopenfilename(filetypes=(
         ("Icon File", "*.png *.PNG"), )))
 def update():
-    with open("lookups\lookup_version.json") as file:
+    with open(r"lookups\lookup_version.json") as file:
         version_data = json.load(file)
         print(version_data["version"])
     updated = updater.update(version_data["update_url"],"Structura1-6",version_data["version"])
     if updated:
-        with open("lookups\lookup_version.json") as file:
+        with open(r"lookups\lookup_version.json") as file:
             version_data = json.load(file)
         messagebox.showinfo("Updated!", version_data["notes"])
     else:
@@ -219,6 +246,43 @@ def runFromGui():
                 structura_base.make_nametag_block_lists()
             structura_base.generate_nametag_file()
             structura_base.compile_pack()
+
+# Command Line interface
+if args.structure and args.pack_name:
+
+    opacity = args.opacity or 20
+    offset = [0, 0, 0]
+    if args.offset:
+        offset = [int(val) for val in args.offset.split(",")]
+
+    pack_file = "{}.mcpack".format(args.pack_name)
+    if args.overwrite and os.path.isfile(pack_file):
+        print("Removing existing pack {}".format(pack_file))
+        os.remove(pack_file)
+
+    structura_base = structura(args.pack_name)
+    structura_base.set_opacity(opacity)
+
+    if icon := args.icon:
+        structura_base.set_icon(icon)
+
+    structura_base.add_model("", args.structure)
+    structura_base.set_model_offset("", offset)
+    structura_base.generate_with_nametags()
+    structura_base.compile_pack()
+
+    # Log the details
+    print("_"*10)
+    unique_blocks = list(set(structura_base.unsupported_blocks))
+    print("Total Unsupported Blocks: {}, Unique Blocks {}".format(
+       len(structura_base.unsupported_blocks),
+       len(unique_blocks))
+    )
+    for i in unique_blocks:
+        print("\t",i.block["name"])
+
+    # Exit Script
+    sys.exit(0)
 
 offsetLbLoc=4
 offsets={}

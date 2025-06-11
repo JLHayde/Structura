@@ -1,3 +1,6 @@
+import traceback
+
+import nbtlib.nbt
 
 import armor_stand_geo_class as asgc
 import armor_stand_class ,structure_reader ,animation_class ,manifest ,os ,glob ,json ,shutil 
@@ -7,8 +10,34 @@ from shutil import copyfile
 from zipfile import ZIP_DEFLATED, ZipFile
 import time
 import os
+import logging
 
 debug=False
+logger = logging.getLogger("build_logger")
+
+class UnsupportedBlock:
+    """
+    Holds all the properties of an unsupported block.
+    Can be compared to filter.
+    """
+    def __init__(self, pos: tuple[int, int, int], block: nbtlib.nbt.Compound, variant: str):
+        self.pos = pos
+        self.block = block
+        self.variant = variant
+
+    def __str__(self):
+        return "x:{} Y:{} Z:{}, Block:{}, Variant: {}".format(
+        self.pos[0], self.pos[1],self.pos[2],
+            self.block["name"],
+            self.variant
+        )
+    def __eq__(self, other):
+        if not isinstance(other, UnsupportedBlock):
+            return NotImplemented
+        return self.block["name"] == other.block["name"] and self.variant == other.variant
+
+    def __hash__(self):
+        return hash((frozenset(self.block["name"]), self.variant))
 
 with open("lookups/nbt_defs.json") as f:
     nbt_def = json.load(f)
@@ -145,10 +174,11 @@ class structura:
                 else:
                     try:
                         armorstand.make_block(x, y, z, blk_name, rot = rot, top = top,variant = variant, trap_open=open_bit, data=data, big = export_big)
-                    except:
-                        self.unsupported_blocks.append("x:{} Y:{} Z:{}, Block:{}, Variant: {}".format(x,y,z,block["name"],variant))
-                        print("There is an unsuported block in this world and it was skipped")
-                        print("x:{} Y:{} Z:{}, Block:{}, Variant: {}".format(x,y,z,block["name"],variant))
+                    except Exception as e:
+                        logger.warning("Unsupported block '{}' in this world and it was skipped".format(blk_name))
+                        logger.error(traceback.format_exc())
+                        unsupported = UnsupportedBlock((x,y,z), block, variant)
+                        self.unsupported_blocks.append(unsupported)
                         if block["name"] not in self.dead_blocks.keys():
                             self.dead_blocks[block["name"]]={}
                         if type(variant) is list:
@@ -164,7 +194,7 @@ class structura:
             armorstand.export(self.pack_name)
             self.animation.export(self.pack_name)
         return struct2make.get_block_list()
-    def compile_pack(self):
+    def compile_pack(self, overwrite=False):
         ## consider temp file
         nametags=list(self.structure_files.keys())
         if len(nametags)>1:
@@ -178,6 +208,8 @@ class structura:
         self.rc.export(self.pack_name)
         file_paths = []
         shutil.make_archive("{}".format(self.pack_name), 'zip', self.pack_name)
+        if overwrite:
+            os.remove(f'{self.pack_name}.mcpack')
         os.rename(f'{self.pack_name}.zip',f'{self.pack_name}.mcpack')
         shutil.rmtree(self.pack_name)
         print("Pack Making Completed")
