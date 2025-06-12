@@ -1752,10 +1752,7 @@
 		"default": "Jungle Sign"
 	},
 	"minecraft:jungle_pressure_plate": {
-		"default": "Jungle PRessure Plate"
-	},
-	"minecraft:jungle_planks": {
-		"default": "Jungle Planks"
+		"default": "Jungle Pressure Plate"
 	},
 	"minecraft:acacia_trapdoor": {
 		"default": "Acacia Trapdoor"
@@ -2810,6 +2807,57 @@
 	},
 	"minecraft:cherry_fence_gate":{
 		"default": "Cherry Fence Gates"
+	},
+	"minecraft:pale_oak_fence_gate":{
+		"default": "Pale Oak Fence Gate"
+	},
+	"minecraft:pale_oak_fence":{
+		"default": "Pale Oak Fence"
+	},
+	"minecraft:pale_oak_stairs":{
+		"default": "Pale Oak Stairs"
+	},
+	"minecraft:pale_oak_standing_sign":{
+		"default": "Pale Oak Sign"
+	},
+	"minecraft:stripped_pale_oak_log":{
+		"default": "Stripped Pale Oak Log"
+	},
+	"minecraft:pale_oak_log":{
+		"default": "Pale Oak Log"
+	},
+	"minecraft:stripped_pale_oak_wood": {
+		"default": "Stripped Pale Oak Wood"
+	},
+	"minecraft:pale_oak_wood": {
+		"default": "Pale Oak Wood"
+	},
+	"minecraft:pale_oak_pressure_plate":{
+		"default": "Pale Oak Pressure Plate"
+	},
+	"minecraft:pale_oak_leaves":{
+		"default": "Pale Oak Leaves"
+	},
+	"minecraft:pale_oak_hanging_sign":{
+		"default": "Pale Oak Hanging Sign"
+	},
+	"minecraft:pale_moss_carpet":{
+		"default": "Pale Moss Carpet"
+	},
+	"minecraft:pale_oak_slab":{
+		"default": "Pale Oak Slab"
+	},
+	"minecraft:pale_oak_planks":{
+		"default": "Pale Oak Planks"
+	},
+	"minecraft:pale_oak_wall_sign":{
+		"default": "Pale Oak Sign"
+	},
+	"minecraft:pale_oak_button":{
+		"default": "Pale Oak Button"
+	},
+	"minecraft:pale_oak_trapdoor":{
+		"default": "Pale Oak Trapdoor"
 	},
 	"minecraft:bamboo_stairs":{
 		"default": "Bamboo Stairs"

@@ -60,8 +60,13 @@ To run Structure, allow start.sh run and run:
 chmod +x start.sh && sh start.sh
 ```
 
+To run from command line
+```bash
+python structura.py --structure path\to\build.mcstructure --pack_name CLI Pack --overwrite True
+```
+
 ## Updating blocks
-As of structura 1.3 you can update the blocks manuall and contribut back to the project.
+As of structura 1.3 you can update the blocks manually and contribute back to the project.
 [Here is a write up on how this works](docs/Editing%20Blocks.md)
 
 
