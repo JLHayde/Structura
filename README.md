@@ -78,3 +78,14 @@ As of structura 1.3 you can update the blocks manually and contribute back to th
 
 Whether you're a seasoned developer or just getting started, your contributions are valuable to us. Don't hesitate to jump in, explore the project, and make an impact. To start contributing, please check out our [Contribution Guidelines](CONTRIBUTING.md). 
 
+
+## Coverage
+Coverage results of block mcstructure tests
+
+| Test Structures               | Coverage | Unique Blocks | Missing Blocks |
+|-------------------------------|----------|---------------|----------------|
+| Stones.mcstructure            | 100%     | 332           | 0              |
+| gems and redstone.mcstructure | 100%     | 74            | 0              |
+| wood2.mcstructure             | 100%     | 79            | 0              |
+| wood.mcstructure              | 100%     | 185           | 0              |
+| decorative.mcstructure        | 97.8%    | 267           | 6              |
