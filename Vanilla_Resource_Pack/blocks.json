@@ -4015,6 +4015,10 @@
     "sound": "wood",
     "textures": "sign"
   },
+  "hanging_sign": {
+    "sound": "wood",
+    "textures": "sign"
+  },
   "stickyPistonArmCollision": {
     "textures": "piston_top"
   },
@@ -5234,7 +5238,7 @@
   },
   "cherry_hanging_sign": {
     "sound": "cherry_wood_hanging_sign",
-    "textures": "cherry_planks"
+    "textures": "stripped_cherry_log_side"
   },
   "cherry_leaves": {
     "sound": "cherry_leaves",

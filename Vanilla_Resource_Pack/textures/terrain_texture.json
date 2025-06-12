@@ -5175,6 +5175,9 @@
     "resin_bricks": {
       "textures": "textures/blocks/resin_bricks"
     },
+    "resin_bricks_slab": {
+      "textures": "textures/blocks/resin_bricks"
+    },
     "chiseled_resin_bricks": {
       "textures": "textures/blocks/chiseled_resin_bricks"
     },

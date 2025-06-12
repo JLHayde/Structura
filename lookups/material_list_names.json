@@ -2292,6 +2292,24 @@
 	"minecraft:andesite_stairs": {
 		"default": "Andesite Stairs"
 	},
+	"minecraft:resin_brick_stairs": {
+		"default": "Resin Brick Stairs"
+	},
+	"minecraft:resin_block": {
+		"default": "Resin Block"
+	},
+	"minecraft:resin_brick_wall": {
+		"default": "Resin Brick Wall"
+	},
+	"minecraft:chiseled_resin_bricks": {
+		"default": "Chiseled Resin Bricks"
+	},
+	"minecraft:resin_bricks": {
+		"default": "Resin Bricks"
+	},
+	"minecraft:resin_brick_double_slab": {
+		"default": "Resin Brick Double Slab"
+	},
 	"minecraft:sandstone_stairs": {
 		"default": "Sandstone Stairs"
 	},
