@@ -261,4 +261,12 @@ class structura:
                     text_file.write(f"{skipped}\n")
         return self.dead_blocks
 
+    def get_unique_blocks_count(self):
+        count = 0
+        if self.structure_files:
+            for k, v in self.structure_files.items():
+                count += len(list(v["block_list"].keys()))
+
+        return count
+
 

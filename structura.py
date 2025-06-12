@@ -4,14 +4,10 @@ import sys
 import logging
 
 logger = logging.getLogger("build_logger")
-file_handler = logging.FileHandler("app.log")
+file_handler = logging.FileHandler("structura_build.log")
 file_handler.setLevel(logging.DEBUG)
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
 formatter = logging.Formatter("[%(asctime)s - %(name)s - %(levelname)s] %(message)s")
-console.setFormatter(formatter)
 file_handler.setFormatter(formatter)
-logger.addHandler(console)
 logger.addHandler(file_handler)
 
 import updater
@@ -271,13 +267,16 @@ if args.structure and args.pack_name:
     structura_base.generate_with_nametags()
     structura_base.compile_pack()
 
+    unique_blocks = list(set(structura_base.unsupported_blocks))
+
     # Log the details
     print("_"*10)
-    unique_blocks = list(set(structura_base.unsupported_blocks))
-    print("Total Unsupported Blocks: {}, Unique Blocks {}".format(
-       len(structura_base.unsupported_blocks),
-       len(unique_blocks))
-    )
+    total_count = structura_base.get_unique_blocks_count()
+    unsupported_count = len(unique_blocks)
+    coverage =  round((100 - (unsupported_count / total_count) * 100), 1)
+    print("Total Unique Blocks: %s" % total_count)
+    print("Total Unsupported Unique Blocks {}".format(unsupported_count))
+    print("Coverage of '{}' is {}% ".format(os.path.basename(args.structure),coverage))
     for i in unique_blocks:
         print("\t",i.block["name"])
 
