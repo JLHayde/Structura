@@ -10,10 +10,10 @@ from shutil import copyfile
 from zipfile import ZIP_DEFLATED, ZipFile
 import time
 import os
-import logging
+from log_config import get_logger
 
 debug=False
-logger = logging.getLogger("build_logger")
+logger = get_logger(__name__)
 
 class UnsupportedBlock:
     """
@@ -176,7 +176,7 @@ class structura:
                         armorstand.make_block(x, y, z, blk_name, rot = rot, top = top,variant = variant, trap_open=open_bit, data=data, big = export_big)
                     except Exception as e:
                         logger.warning("Unsupported block '{}' in this world and it was skipped".format(blk_name))
-                        logger.error(traceback.format_exc())
+                        logger.debug(traceback.format_exc())
                         unsupported = UnsupportedBlock((x,y,z), block, variant)
                         self.unsupported_blocks.append(unsupported)
                         if block["name"] not in self.dead_blocks.keys():
@@ -196,6 +196,7 @@ class structura:
         return struct2make.get_block_list()
     def compile_pack(self, overwrite=False):
         ## consider temp file
+        logger.info("Starting compile for pack '{}".format(self.pack_name))
         nametags=list(self.structure_files.keys())
         if len(nametags)>1:
             manifest.export(self.pack_name,nameTags=nametags)
@@ -207,14 +208,16 @@ class structura:
         copyfile(larger_render, larger_render_path)
         self.rc.export(self.pack_name)
         file_paths = []
+        logger.info("Making Archive...")
         shutil.make_archive("{}".format(self.pack_name), 'zip', self.pack_name)
         if overwrite:
             os.remove(f'{self.pack_name}.mcpack')
         os.rename(f'{self.pack_name}.zip',f'{self.pack_name}.mcpack')
         shutil.rmtree(self.pack_name)
-        print("Pack Making Completed")
         self.timers["finished"]=time.time()-self.timers["previous"]
         self.timers["total"]=time.time()-self.timers["start"]
+
+        logger.info(f"Pack Making Completed in {self.timers["total"]:.2} seconds")
         
         return f'{self.pack_name}.mcpack'
     def _process_block(self,block):
