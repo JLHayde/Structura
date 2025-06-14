@@ -1,0 +1,10 @@
+[tool.black]
+exclude = '''
+/(
+  \.git
+  | \.venv
+  | venv
+  | dist
+  | build
+)/
+'''

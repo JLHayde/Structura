@@ -1,0 +1,23 @@
+[flake8]
+
+exclude =
+    .tox,
+    .git,
+    .flake8,
+    .gitignore,
+    .travis.yml,
+    .cache,
+    venv/*,
+    dist/*,
+    build/*,
+    *.rst,
+    *.yml,
+    *.pyc,
+    __pycache__,
+    ./*Deploy.py
+    ./lambda_function.py
+
+# E203 whitespace before ':' (this is not PEP8 compliant)
+# E501 line too long (112 > 79 characters)
+
+ignore = E203, E501
