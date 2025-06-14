@@ -162,11 +162,15 @@ class structura:
                 text_file.write(column)
                 text_file.write("_" * len(column) + "\n")
 
-                for name in all_blocks.keys():
-                    commonName = name.replace("minecraft:","")
+                # Sort block list alphabetically, sort items
+                # even if they are not str or don't have display names.
+                # Can occur when some blocks are unsupported.
+                sorted_blocks = sorted(all_blocks.keys(), key=lambda block: block.replace("minecraft:", "").lower())
+                for name in sorted_blocks:
+                    common_name = name.replace("minecraft:","")
                     count = all_blocks[name]
                     stacks, blocks = self._make_block_count_text(count)
-                    text_file.write(f"{commonName:<25} {count:>4}  | {stacks:>5}  {blocks:>5}\n")
+                    text_file.write(f"{common_name:<25} {count:>4}  | {stacks:>5}  {blocks:>5}\n")
 
                 text_file.write("_" * len(column) + "\n")
                 block_count = self.get_model_block_count(model_name)
