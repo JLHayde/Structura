@@ -112,9 +112,26 @@ class structura:
             self.structure_files[model_name]["block_list"]=blocks
             ##consider temp folder
             self.armorstand_entity.export(self.pack_name)## this may be in the wrong spot, but transfered from 1.5
-        
+
+    def get_model_block_count(self, model_name: str) -> int:
+        """
+        Return the total number of blocks in the model.
+        :param model_name:
+        :return:
+        """
+        model =  self.structure_files.get(model_name)
+        if model is None:
+            return 0
+
+        count = 0
+        for k,v in model["block_list"].items():
+            count += v
+        return count
+
+
     def make_nametag_block_lists(self):
         ## consider temp file
+        logger.info("Generating Block list")
         file_names=[]
         for model_name in self.structure_files.keys():
             file_name="{}-{} block list.txt".format(self.pack_name,model_name)
@@ -122,9 +139,22 @@ class structura:
             all_blocks = self.structure_files[model_name]["block_list"]
             with open(file_name,"w+") as text_file:
                 text_file.write("This is a list of blocks, there is a known issue with variants, all blocks are reported as minecraft stores them\n")
+                # Decorate Colum names
+                column = f"{'Block':<25} {'Count':>4}  | {'Stacks':>5}   {'Remainder':>5} \n"
+                text_file.write("_"*len(column) + "\n")
+                text_file.write(column)
+                text_file.write("_" * len(column) + "\n")
+
                 for name in all_blocks.keys():
                     commonName = name.replace("minecraft:","")
-                    text_file.write("{}: {}\n".format(commonName,all_blocks[name]))
+                    count = all_blocks[name]
+                    stacks, blocks = self._make_block_count_text(count)
+                    text_file.write(f"{commonName:<25} {count:>4}  | {stacks:>5}  {blocks:>5}\n")
+
+                text_file.write("_" * len(column) + "\n")
+                block_count = self.get_model_block_count(model_name)
+                text_file.write(f"Block Count: {block_count}")
+
         return file_names
     def make_big_blocklist(self):
         ## consider temp file
@@ -220,6 +250,20 @@ class structura:
         logger.info(f"Pack Making Completed in {self.timers["total"]:.2} seconds")
         
         return f'{self.pack_name}.mcpack'
+
+    @staticmethod
+    def _make_block_count_text(count: int) -> tuple[int, int]:
+        """
+        Takes a block count and returns it as "Stacks, Remainder"
+        Helps make block counts more readable.
+        :param int count:
+        :return:
+        """
+
+        whole = count // 64
+        remainder = count % 64
+        return whole, remainder
+
     def _process_block(self,block):
         rot = None
         top = False

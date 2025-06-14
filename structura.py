@@ -11,6 +11,7 @@ parser = argparse.ArgumentParser(description="Structura app that generates Resou
 
 parser.add_argument("--structure", type=str, help=".mcstructure file")
 parser.add_argument("--pack_name", type=str, help="Name of pack")
+parser.add_argument("--make_list", action='store_true',  help="Create Block list")
 parser.add_argument("--opacity", type=int, help="Opacity of blocks")
 parser.add_argument("--icon", type=str, help="Icon for pack")
 parser.add_argument("--offset", type=str, help="X, Y, X")
@@ -305,6 +306,9 @@ if args.structure and args.pack_name:
     structura_base.set_model_offset("", offset)
     structura_base.generate_with_nametags()
     structura_base.compile_pack()
+
+    if args.make_list:
+        structura_base.make_nametag_block_lists()
 
     log_build(structura_base)
 
