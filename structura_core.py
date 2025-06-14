@@ -125,6 +125,9 @@ class structura:
                 for name in all_blocks.keys():
                     commonName = name.replace("minecraft:","")
                     text_file.write("{}: {}\n".format(commonName,all_blocks[name]))
+
+                text_file.write("_"*10 + "\n")
+                text_file.write("Lookup version: {}\n".format(self.get_lookup_version()))
         return file_names
     def make_big_blocklist(self):
         ## consider temp file
@@ -196,7 +199,8 @@ class structura:
         return struct2make.get_block_list()
     def compile_pack(self, overwrite=False):
         ## consider temp file
-        logger.info("Starting compile for pack '{}".format(self.pack_name))
+        logger.info("Starting compile for pack: {}".format(self.pack_name))
+        logger.info("Using lookup version: {}".format(self.get_lookup_version()))
         nametags=list(self.structure_files.keys())
         if len(nametags)>1:
             manifest.export(self.pack_name,nameTags=nametags)
@@ -272,4 +276,16 @@ class structura:
 
         return count
 
+    @staticmethod
+    def get_lookup_version() -> str:
+        """
+        Get the version from lookup_version.json.
+        :return:
+        """
+        look_up_path = r"lookups\lookup_version.json"
+        if os.path.isfile(look_up_path):
+            with open(r"lookups\lookup_version.json") as file:
+                version_data = json.load(file)
+                return version_data["version"]
+        return "No version found"
 

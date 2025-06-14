@@ -39,8 +39,10 @@ if not(os.path.exists("lookups")):
 
             shutil.copytree(resource_dir, target_dir)
             logger.info(f"Resources extracted to {target_dir}")
-
-    except AttributeError:
+    # If using `pyinstaller --onefile` instead of .spec the datas are not
+    # bundled in the frozen directory, Fallback to download if we error.
+    except FileNotFoundError:
+        logger.info("Did not find bundled lookup files.")
         logger.info("Downloading lookup files")
         updater.update("https://update.structuralab.com/structuraUpdate","Structura1-6","")
     except [Exception]:
