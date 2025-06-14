@@ -130,6 +130,23 @@ class structura:
 
 
     def make_nametag_block_lists(self):
+        """
+        Creates a text files for each model with required
+        block counts organized block item.
+
+        example:
+            _______________________________________________________
+            Block                     Count | Stacks   Remainder
+            _______________________________________________________
+            Dirt                         1  |     0      1
+            Grass Block                324  |     5      4
+            ...
+            Stone Brick Slab             2  |     0      2
+            _______________________________________________________
+            Block Count: 3744
+
+        :return:
+        """
         ## consider temp file
         logger.info("Generating Block list")
         file_names=[]
