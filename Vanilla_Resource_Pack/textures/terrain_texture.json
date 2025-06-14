@@ -4228,7 +4228,9 @@
         "textures/blocks/log_acacia",
         "textures/blocks/stripped_acacia_log",
         "textures/blocks/log_big_oak",
-        "textures/blocks/stripped_dark_oak_log"
+        "textures/blocks/stripped_dark_oak_log",
+        "textures/blocks/stripped_pale_oak_log",
+        "textures/blocks/stripped_cherry_log"
       ]
     },
     "wood_acacia": {
@@ -5173,6 +5175,9 @@
       ]
     },
     "resin_bricks": {
+      "textures": "textures/blocks/resin_bricks"
+    },
+    "resin_bricks_slab": {
       "textures": "textures/blocks/resin_bricks"
     },
     "chiseled_resin_bricks": {

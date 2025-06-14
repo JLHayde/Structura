@@ -60,8 +60,13 @@ To run Structure, allow start.sh run and run:
 chmod +x start.sh && sh start.sh
 ```
 
+To run from command line
+```bash
+python structura.py --structure path\to\build.mcstructure --pack_name CLI Pack --overwrite True
+```
+
 ## Updating blocks
-As of structura 1.3 you can update the blocks manuall and contribut back to the project.
+As of structura 1.3 you can update the blocks manually and contribute back to the project.
 [Here is a write up on how this works](docs/Editing%20Blocks.md)
 
 
@@ -73,3 +78,14 @@ As of structura 1.3 you can update the blocks manuall and contribut back to the 
 
 Whether you're a seasoned developer or just getting started, your contributions are valuable to us. Don't hesitate to jump in, explore the project, and make an impact. To start contributing, please check out our [Contribution Guidelines](CONTRIBUTING.md). 
 
+
+## Coverage
+Coverage results of block mcstructure tests
+
+| Test Structures               | Coverage | Unique Blocks | Missing Blocks |
+|-------------------------------|----------|---------------|----------------|
+| Stones.mcstructure            | 100%     | 332           | 0              |
+| gems and redstone.mcstructure | 100%     | 74            | 0              |
+| wood2.mcstructure             | 100%     | 79            | 0              |
+| wood.mcstructure              | 100%     | 185           | 0              |
+| decorative.mcstructure        | 97.8%    | 267           | 6              |

@@ -8,8 +8,10 @@ from numpy import array, ones, uint8, zeros
 import copy
 import os
 import time
+import logging
 
 debug=False
+logger = logging.getLogger("build_logger")
 
 
 class armorstandgeo:
@@ -264,7 +266,12 @@ class armorstandgeo:
 
     def extend_uv_image(self, new_image_filename):
         # helper function that just appends to the uv array to make things
-        image = Image.open(new_image_filename)
+
+        # Fallback to a tga
+        if not os.path.isfile(new_image_filename):
+            new_image_filename = new_image_filename.split(".")[0] + ".tga"
+
+        image = Image.open(new_image_filename).convert("RGBA")
         impt = array(image)
         shape=list(impt.shape)
         if shape[0]>16:
@@ -313,9 +320,12 @@ class armorstandgeo:
                             print("{}: {}".format(side,texture_files[side]))
             for key in texture_files.keys():
                 if texture_files[key] not in self.uv_map.keys():
-                    self.extend_uv_image(
-                        "{}/{}.png".format(self.ref_resource_pack, texture_files[key]))
-                    self.uv_map[texture_files[key]] = len(self.uv_map.keys())
+                    try:
+                        self.extend_uv_image(
+                            "{}/{}.png".format(self.ref_resource_pack, texture_files[key]))
+                        self.uv_map[texture_files[key]] = len(self.uv_map.keys())
+                    except Exception as e:
+                        raise RuntimeError("Failed to load texture {}".format(texture_files[key]))
                 temp_uv[key] = {
                     "uv": [0, self.uv_map[texture_files[key]]], "uv_size": [1, 1]}
 

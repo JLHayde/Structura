@@ -1,9 +1,54 @@
 import os
+import argparse
+import sys
+import shutil
+import traceback
+
+from log_config import get_logger
+
+# CLI Args
+parser = argparse.ArgumentParser(description="Structura app that generates Resource packs from .mcstructure files.")
+
+parser.add_argument("--structure", type=str, help=".mcstructure file")
+parser.add_argument("--pack_name", type=str, help="Name of pack")
+parser.add_argument("--opacity", type=int, help="Opacity of blocks")
+parser.add_argument("--icon", type=str, help="Icon for pack")
+parser.add_argument("--offset", type=str, help="X, Y, X")
+parser.add_argument("--overwrite", type=bool, help="Overwrite the output file.")
+parser.add_argument("--debug", "-db", action='store_true', help='Enable debug mode')
+parser.add_argument("--update", action='store_true', help='Run updater')
+
+args = parser.parse_args()
+logger = get_logger()
+logger.info("Launched Structura.")
+
+debug = args.debug
+if debug:
+    os.environ["DEBUG"] = "1"
+    logger = get_logger(level="debug")
+    logger.debug("Debug mode is on")
+
 import updater
 if not(os.path.exists("lookups")):
-    print("downloading lookup files")
-    updater.update("https://update.structuralab.com/structuraUpdate","Structura1-6","")
-    
+    logger.warning("No lookups found, fetching...")
+    try:
+        base_path = sys._MEIPASS
+        for resource in ["lookups", "Vanilla_Resource_Pack"]:
+            target_dir = os.path.join(os.getcwd(), resource)
+            resource_dir = os.path.join(base_path, resource)
+
+            shutil.copytree(resource_dir, target_dir)
+            logger.info(f"Resources extracted to {target_dir}")
+    # If using `pyinstaller --onefile` instead of .spec the datas are not
+    # bundled in the frozen directory, Fallback to download if we error.
+    except FileNotFoundError:
+        logger.info("Did not find bundled lookup files.")
+        logger.info("Downloading lookup files")
+        updater.update("https://update.structuralab.com/structuraUpdate","Structura1-6","")
+    except [Exception]:
+        logger.critical("Error fetching lookup files, details below.")
+        logger.critical(traceback.format_exc())
+
 import json
 from structura_core import structura
 from turtle import color
@@ -13,7 +58,6 @@ import nbtlib
 from tkinter import ttk,filedialog,messagebox
 from tkinter import StringVar, Button, Label, Entry, Tk, Checkbutton, END, ACTIVE
 from tkinter import filedialog, Scale,DoubleVar,HORIZONTAL,IntVar,Listbox, ANCHOR
-debug = False
 
 
 def browseStruct():
@@ -25,16 +69,20 @@ def browseIcon():
     icon_var.set(filedialog.askopenfilename(filetypes=(
         ("Icon File", "*.png *.PNG"), )))
 def update():
-    with open("lookups\lookup_version.json") as file:
+    with open(r"lookups\lookup_version.json") as file:
         version_data = json.load(file)
-        print(version_data["version"])
+        logger.info(version_data["version"])
     updated = updater.update(version_data["update_url"],"Structura1-6",version_data["version"])
     if updated:
-        with open("lookups\lookup_version.json") as file:
+        with open(r"lookups\lookup_version.json") as file:
             version_data = json.load(file)
         messagebox.showinfo("Updated!", version_data["notes"])
     else:
         messagebox.showinfo("Status", "You are currently up to date.")
+
+if args.update:
+    update()
+
 def box_checked():
     r = 0
     title_text.grid(row=r, column=0, columnspan=2)
@@ -165,6 +213,20 @@ def delete_model():
     listbox.delete(ANCHOR)
 
 
+def log_build(structura_build):
+
+    logger.info("Build Results...")
+    unique_blocks = list(set(structura_build.unsupported_blocks))
+    total_count = structura_build.get_unique_blocks_count()
+    unsupported_count = len(unique_blocks)
+    coverage =  round((100 - (unsupported_count / total_count) * 100), 1)
+    logger.info("Total Unique Blocks: %s" % total_count)
+    logger.info("Total Unsupported Unique Blocks {}".format(unsupported_count))
+    logger.info("Coverage of '{}' is {}% ".format(structura_build.pack_name,coverage))
+    for i in unique_blocks:
+        logger.info("\t {}".format(i.block["name"]))
+
+
 def runFromGui():
     ##wrapper for a gui.
     global models, offsets
@@ -193,7 +255,7 @@ def runFromGui():
         if len(icon_var.get())>0:
             structura_base.set_icon(icon_var.get())
         if debug:
-            print(models)
+            logger.debug(models)
         
         if not(check_var.get()):
             structura_base.add_model("",FileGUI.get())
@@ -219,6 +281,37 @@ def runFromGui():
                 structura_base.make_nametag_block_lists()
             structura_base.generate_nametag_file()
             structura_base.compile_pack()
+
+        log_build(structura_base)
+
+# Command Line interface
+if args.structure and args.pack_name:
+
+    opacity = args.opacity or 20
+    offset = [0, 0, 0]
+    if args.offset:
+        offset = [int(val) for val in args.offset.split(",")]
+
+    pack_file = "{}.mcpack".format(args.pack_name)
+    if args.overwrite and os.path.isfile(pack_file):
+        logger.info("Removing existing pack {}".format(pack_file))
+        os.remove(pack_file)
+
+    structura_base = structura(args.pack_name)
+    structura_base.set_opacity(opacity)
+
+    if icon := args.icon:
+        structura_base.set_icon(icon)
+
+    structura_base.add_model("", args.structure)
+    structura_base.set_model_offset("", offset)
+    structura_base.generate_with_nametags()
+    structura_base.compile_pack()
+
+    log_build(structura_base)
+
+    # Exit Script
+    sys.exit(0)
 
 offsetLbLoc=4
 offsets={}
@@ -259,7 +352,7 @@ IconButton = Button(root, text="Browse", command=browseIcon)
 file_lb = Label(root, text="Structure file")
 packName_lb = Label(root, text="Pack Name")
 if debug:
-    debug_lb = Label(root, text="Debug Mode",fg='Red').place(x=285,y=70)
+    debug_lb = Label(root, text="Debug Mode",fg='Red').place(x=0,y=2)
 packButton = Button(root, text="Browse", command=browseStruct)
 advanced_check = Checkbutton(root, text="advanced", variable=check_var, onvalue=1, offvalue=0, command=box_checked)
 export_check = Checkbutton(root, text="make lists", variable=export_list, onvalue=1, offvalue=0)
@@ -277,3 +370,4 @@ box_checked()
 root.resizable(0,0)
 root.mainloop()
 root.quit()
+
