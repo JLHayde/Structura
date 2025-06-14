@@ -4,7 +4,9 @@
   "resource_pack_name": "vanilla",
   "texture_data": {
     "acacia_planks": {
-      "textures": "textures/blocks/planks_acacia"
+      "textures": [
+        "textures/blocks/planks_acacia"
+      ]
     },
     "acacia_sign": {
       "textures": "textures/blocks/planks_acacia"
