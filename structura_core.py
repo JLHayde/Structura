@@ -128,7 +128,6 @@ class structura:
             count += v
         return count
 
-
     def make_nametag_block_lists(self):
         """
         Creates a text files for each model with required
@@ -176,6 +175,9 @@ class structura:
                 block_count = self.get_model_block_count(model_name)
                 text_file.write(f"Block Count: {block_count}")
 
+        text_file.write("_" * 10 + "\n")
+        text_file.write("Lookup version: {}\n".format(self.get_lookup_version()))
+
         return file_names
     def make_big_blocklist(self):
         ## consider temp file
@@ -184,7 +186,7 @@ class structura:
             text_file.write("This is a list of blocks, there is a known issue with variants, all blocks are reported as minecraft stores them\n")
             for name in self.all_blocks.keys():
                 commonName = name.replace("minecraft:","")
-                
+
                 text_file.write("{}: {}\n".format(commonName,self.all_blocks[name]))
 
     def _add_blocks_to_geo(self,struct2make,model_name,export_big=False):
@@ -200,12 +202,12 @@ class structura:
         else:
             update_animation=False
         for y in range(ylen):
-            
-            #creates the layer for controlling. Note there is implied formating here
-            #for layer names
+
+            # creates the layer for controlling. Note there is implied formating here
+            # for layer names
             if y<12:
                 armorstand.make_layer(y)
-                #adds links the layer name to an animation
+                # adds links the layer name to an animation
                 if update_animation and not export_big:
                     self.animation.insert_layer(y)
             non_air=struct2make.get_layer_blocks(y)
@@ -247,7 +249,8 @@ class structura:
         return struct2make.get_block_list()
     def compile_pack(self, overwrite=False):
         ## consider temp file
-        logger.info("Starting compile for pack '{}".format(self.pack_name))
+        logger.info("Starting compile for pack: {}".format(self.pack_name))
+        logger.info("Using lookup version: {}".format(self.get_lookup_version()))
         nametags=list(self.structure_files.keys())
         if len(nametags)>1:
             manifest.export(self.pack_name,nameTags=nametags)
@@ -269,22 +272,8 @@ class structura:
         self.timers["total"]=time.time()-self.timers["start"]
 
         logger.info(f"Pack Making Completed in {self.timers["total"]:.2} seconds")
-        
+
         return f'{self.pack_name}.mcpack'
-
-    @staticmethod
-    def _make_block_count_text(count: int) -> tuple[int, int]:
-        """
-        Takes a block count and returns it as "Stacks, Remainder"
-        Helps make block counts more readable.
-        :param int count:
-        :return:
-        """
-
-        whole = count // 64
-        remainder = count % 64
-        return whole, remainder
-
     def _process_block(self,block):
         rot = None
         top = False
@@ -299,7 +288,7 @@ class structura:
                     rot = int(block["states"][key])
                 except:
                     rot = str(block["states"][key])
-                
+
             if nbt_def[key]== "top" and key in block["states"].keys():
                 top = bool(block["states"][key])
             if nbt_def[key]== "open_bit" and "open_bit" in block["states"].keys():
@@ -337,4 +326,28 @@ class structura:
 
         return count
 
+    @staticmethod
+    def _make_block_count_text(count: int) -> tuple[int, int]:
+        """
+        Takes a block count and returns it as "Stacks, Remainder"
+        Helps make block counts more readable.
+        :param int count:
+        :return:
+        """
 
+        whole = count // 64
+        remainder = count % 64
+        return whole, remainder
+
+    @staticmethod
+    def get_lookup_version() -> str:
+        """
+        Get the version from lookup_version.json.
+        :return:
+        """
+        look_up_path = r"lookups\lookup_version.json"
+        if os.path.isfile(look_up_path):
+            with open(r"lookups\lookup_version.json") as file:
+                version_data = json.load(file)
+                return version_data["version"]
+        return "No version found"
