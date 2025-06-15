@@ -35,7 +35,7 @@ def get_logger(
     # Place log in app root if we are frozen, otherwise use temp dir
     log_file = "structura.log"
     if not hasattr(sys, "_MEIPASS"):
-        log_file =  os.path.join("temp", log_file)
+        log_file =  os.path.join("tmp", log_file)
     log_file_path = os.path.join(os.getcwd(), log_file)
 
     if log_level == "debug":
