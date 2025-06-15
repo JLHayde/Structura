@@ -154,29 +154,31 @@ class structura:
             file_names.append(file_name)
             all_blocks = self.structure_files[model_name]["block_list"]
             with open(file_name,"w+") as text_file:
-                text_file.write("This is a list of blocks, there is a known issue with variants, all blocks are reported as minecraft stores them\n")
-                # Decorate Colum names
-                column = f"{'Block':<25} {'Count':>4}  | {'Stacks':>5}   {'Remainder':>5} \n"
-                text_file.write("_"*len(column) + "\n")
-                text_file.write(column)
-                text_file.write("_" * len(column) + "\n")
-
                 # Sort block list alphabetically, sort items
                 # even if they are not str or don't have display names.
                 # Can occur when some blocks are unsupported.
                 sorted_blocks = sorted(all_blocks.keys(), key=lambda block: block.replace("minecraft:", "").lower())
+
+                text_file.write("This is a list of blocks, there is a known issue with variants, all blocks are reported as minecraft stores them\n")
+                # Decorate Colum names, also calculate max str length for colum width.
+                max_len = max(len("Block"), *(len(b) for b in sorted_blocks))
+                column = f"{'Block':<{max_len}} {'Count':>4}  | {'Stacks':>5}   {'Remainder':>5} \n"
+                text_file.write("_"*len(column) + "\n")
+                text_file.write(column)
+                text_file.write("_" * len(column) + "\n")
+
                 for name in sorted_blocks:
                     common_name = name.replace("minecraft:","")
                     count = all_blocks[name]
                     stacks, blocks = self._make_block_count_text(count)
-                    text_file.write(f"{common_name:<25} {count:>4}  | {stacks:>5}  {blocks:>5}\n")
+                    text_file.write(f"{common_name:<{max_len}} {count:>4}  | {stacks:>5}  {blocks:>5}\n")
 
                 text_file.write("_" * len(column) + "\n")
                 block_count = self.get_model_block_count(model_name)
-                text_file.write(f"Block Count: {block_count}")
+                text_file.write(f"Block Count: {block_count}\n")
 
-        text_file.write("_" * 10 + "\n")
-        text_file.write("Lookup version: {}\n".format(self.get_lookup_version()))
+                text_file.write("_" * 10 + "\n")
+                text_file.write("Lookup version: {}\n".format(self.get_lookup_version()))
 
         return file_names
     def make_big_blocklist(self):
