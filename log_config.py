@@ -34,9 +34,15 @@ def get_logger(
 
     # Place log in app root if we are frozen, otherwise use temp dir
     log_file = "structura.log"
-    if not hasattr(sys, "_MEIPASS"):
-        log_file =  os.path.join("tmp", log_file)
-    log_file_path = os.path.join(os.getcwd(), log_file)
+    # Frozen
+    if hasattr(sys, "_MEIPASS"):
+        log_file_path = os.path.join(os.getcwd(), log_file)
+    # Lambda env
+    elif "AWS_LAMBDA_FUNCTION_NAME" in os.environ:
+        log_file_path = os.path.join("tmp", log_file)
+    # IDE
+    else:
+        log_file_path = os.path.join(os.getcwd(), log_file)
 
     if log_level == "debug":
         file_formatter_str = (
@@ -61,7 +67,7 @@ def get_logger(
         # Log to file, attempt to add file handler for aws, discord
         if file_log:
             try:
-                os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
+
                 file_handler = logging.FileHandler(
                     os.path.join(os.getcwd(), log_file_path)
                 )
